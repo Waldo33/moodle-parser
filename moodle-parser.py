@@ -36,8 +36,7 @@ def get_content(html):
             'teachers': listTeachers,
             'link': item.find('h3', class_='coursename').find('a', class_='aalink').get('href')
             })
-    for i in range(0, len(courses)):
-         print(courses[i])
+    print(f"File saved as {login}.json")
 
     with open(f"{login}.json", 'w', encoding='utf-8') as f:
         json.dump(courses, f, ensure_ascii=False, indent=4)
