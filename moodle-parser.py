@@ -7,9 +7,13 @@ import os.path
 
 session = requests.session()
 # Data for sign in
-URL = input("auth_page: ")
-login = input("Login: ")
-passwd = getpass("Password: ")
+# URL = input("auth_page: ")
+# login = input("Login: ")
+# passwd = getpass("Password: ")
+
+URL = "http://md.vtgt.ru/login/index.php"
+login = "vm4127tserkovnikov"
+passwd = "VtgtFilialPgups2022!"
 
 
 # Headers for GET request
@@ -21,14 +25,12 @@ HEADERS = {
 }
 
 def get_profile_link(link):
-    profile = session.get(link).text
-    soupProfile = BeautifulSoup(profile, 'html.parser')
-    if soupProfile.find('li', class_="contentnode").find('dd').find('a') != None:
-        mail = soupProfile.find('li', class_="contentnode").find('dd').find('a').text
+    soupProfile = BeautifulSoup(session.get(link).text, 'html.parser')
+    mail = soupProfile.find('li', class_="contentnode").find('dd').find('a')
+    if mail != None:
+        mail = mail.text
         return mail
-    else:
-        mail = 'Mail is not specified'
-        return mail
+
 
 def get_content(html):
     soup = BeautifulSoup(html, 'html.parser')
@@ -37,7 +39,6 @@ def get_content(html):
     for item in items:
         listTeachers = []
         teachers = item.find('ul', class_='teachers').findAll('li')
-        
         for teacher in teachers:
 
             listTeachers.append({
