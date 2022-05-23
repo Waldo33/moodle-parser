@@ -5,20 +5,32 @@ import json
 from getpass import getpass
 import os.path
 
-
+session = requests.session()
 # Data for sign in
-URL = input("auth_page: ")
-login = input("Login: ")
-passwd = getpass("Password: ")
-PATH = "/"
+# URL = input("auth_page: ")
+# login = input("Login: ")
+# passwd = getpass("Password: ")
+URL = "http://md.vtgt.ru/login/index.php"
+login = "vm4127tserkovnikov"
+passwd = "VtgtFilialPgups2022!"
 
 # Headers for GET request
 HEADERS = {
     'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
     'Cookie': 'MoodleSession=1',
     'User-Agent': 'Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/101.0.4951.64 Mobile Safari/537.36 Edg/101.0.1210.47',
-    'Path': PATH
+    'Path': '/'
 }
+
+def get_profile_link(link):
+    profile = session.get(link).text
+    soupProfile = BeautifulSoup(profile, 'html.parser')
+    if soupProfile.find('li', class_="contentnode").find('dd').find('a') != None:
+        mail = soupProfile.find('li', class_="contentnode").find('dd').find('a').text
+        return mail
+    else:
+        mail = 'Mail is not specified'
+        return mail
 
 def get_content(html):
     soup = BeautifulSoup(html, 'html.parser')
@@ -27,11 +39,16 @@ def get_content(html):
     for item in items:
         listTeachers = []
         teachers = item.find('ul', class_='teachers').findAll('li')
+        
         for teacher in teachers:
+
             listTeachers.append({
                 'name': teacher.find('a').get_text(),
-                'link': teacher.find('a').get('href')
+                'link': teacher.find('a').get('href'),
+                'mail': get_profile_link(teacher.find('a').get('href'))
             })
+
+        
         courses.append({
             'name': item.find('h3', class_='coursename').find('a', class_='aalink').get_text(),
             'teachers': listTeachers,
@@ -44,12 +61,11 @@ def get_content(html):
     with open(file, 'w', encoding='utf-8') as f:
         json.dump(courses, f, ensure_ascii=False, indent=4)
 
-def get_auth(URL, params=None):
-    session = requests.session()
+def get_auth(URL, params=None, PATH="/"):
     r = session.get(URL, headers=HEADERS)
-    # get moodleSession и send POST request
-    moodleSession = 'MoodleSession='+session.cookies['MoodleSession']
-    HEADERS['Cookie'] = moodleSession
+    # get moodleSession и send POST request 
+    HEADERS['Cookie'] = 'MoodleSession='+session.cookies['MoodleSession']
+    HEADERS['Path'] = PATH
     cookie = r.cookies.get_dict()
     pattern = '<input type="hidden" name="logintoken" value="\w{32}">'
     token = re.findall(pattern, r.text)
