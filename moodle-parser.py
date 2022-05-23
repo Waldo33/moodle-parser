@@ -7,12 +7,10 @@ import os.path
 
 session = requests.session()
 # Data for sign in
-# URL = input("auth_page: ")
-# login = input("Login: ")
-# passwd = getpass("Password: ")
-URL = "http://md.vtgt.ru/login/index.php"
-login = "vm4127tserkovnikov"
-passwd = "VtgtFilialPgups2022!"
+URL = input("auth_page: ")
+login = input("Login: ")
+passwd = getpass("Password: ")
+
 
 # Headers for GET request
 HEADERS = {
@@ -61,11 +59,10 @@ def get_content(html):
     with open(file, 'w', encoding='utf-8') as f:
         json.dump(courses, f, ensure_ascii=False, indent=4)
 
-def get_auth(URL, params=None, PATH="/"):
+def get_auth(URL, params=None):
     r = session.get(URL, headers=HEADERS)
     # get moodleSession и send POST request 
     HEADERS['Cookie'] = 'MoodleSession='+session.cookies['MoodleSession']
-    HEADERS['Path'] = PATH
     cookie = r.cookies.get_dict()
     pattern = '<input type="hidden" name="logintoken" value="\w{32}">'
     token = re.findall(pattern, r.text)
