@@ -24,12 +24,18 @@ HEADERS = {
     'Path': '/'
 }
 
-def get_profile_link(link):
+mails = []
+def get_profile_mail(link):
     soupProfile = BeautifulSoup(session.get(link).text, 'html.parser')
     mail = soupProfile.find('li', class_="contentnode").find('dd').find('a')
     if mail != None:
         mail = mail.text
-        return mail
+        if mails.count(mail) == 0:
+            mails.append(mail)
+            mail = mails[mails.index(mail, 0, len(mails))]
+        else:
+            mail = mails[mails.index(mail, 0, len(mails))]
+    return mail
 
 
 def get_content(html):
@@ -44,7 +50,7 @@ def get_content(html):
             listTeachers.append({
                 'name': teacher.find('a').get_text(),
                 'link': teacher.find('a').get('href'),
-                'mail': get_profile_link(teacher.find('a').get('href'))
+                'mail': get_profile_mail(teacher.find('a').get('href'))
             })
 
         
@@ -54,6 +60,7 @@ def get_content(html):
             'link': item.find('h3', class_='coursename').find('a', class_='aalink').get('href')
             })
     
+    print(mails)
     file = f"{login}.json"
     print(f"File saved as {os.path.abspath(file)}")
 
