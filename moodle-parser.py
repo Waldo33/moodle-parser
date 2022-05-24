@@ -7,13 +7,9 @@ import os.path
 
 session = requests.session()
 # Data for sign in
-# URL = input("auth_page: ")
-# login = input("Login: ")
-# passwd = getpass("Password: ")
-
-URL = "http://md.vtgt.ru/login/index.php"
-login = "vm4127tserkovnikov"
-passwd = "VtgtFilialPgups2022!"
+URL = input("auth_page: ")
+login = input("Login: ")
+passwd = getpass("Password: ")
 
 
 # Headers for GET request
